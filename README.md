@@ -1,67 +1,79 @@
 # CodePaw 🐾
 
-Your virtual coding companion that grows with your programming habits!
+**Your virtual coding companion that grows with your programming habits!**
 
-## Features
+## ✨ Features
 
-- 🐣 **Virtual Pet Evolution**: Watch your pet grow from baby to code legend
-- 📊 **Activity Tracking**: Automatically tracks saves, commits, typing, and more
-- 🔗 **Git Integration**: Bonus XP for commits, bug fixes, and features
+- 🐣 **Pet Evolution**: Watch your pet grow from baby to code legend
+- 📊 **Activity Tracking**: Automatic tracking of saves, commits, typing
+- 🔗 **Git Integration**: Bonus XP for commits, bug fixes, features  
 - ⏱️ **Time Tracking**: Milestone rewards for coding sessions
-- 🏆 **Achievements System**: Unlock achievements as you code
-- 📈 **Detailed Statistics**: Track your coding progress over time
+- 🏆 **Achievement System**: Unlock achievements as you code
+- 📈 **Statistics Dashboard**: Track your coding progress over time
 
-## How it Works
+## 🚀 How It Works
 
-1. Install the extension
+1. Install CodePaw
 2. Start coding as usual
-3. Watch your CodePaw grow in the sidebar
-4. Earn XP through:
-   - File saves (+15 XP)
-   - Git commits (+25 XP)
-   - Creating files (+20 XP)
-   - Debug sessions (+20 XP)
-   - Time milestones (+50-100 XP)
+3. Watch your pet grow in the sidebar
+4. Earn XP through coding activities
 
-## Evolution Stages
+### XP Activities
+- **File saves**: +15 XP
+- **Git commits**: +25 XP  
+- **Creating files**: +20 XP
+- **Debug sessions**: +20 XP
+- **Time milestones**: +50-100 XP
 
-- 🐣 **Baby Coder** (Level 1-9)
-- 🐱 **Junior Developer** (Level 10-24)
-- 🦄 **Senior Developer** (Level 25-49)
-- 🐉 **Tech Lead** (Level 50-99)
-- ⭐ **Code Legend** (Level 100+)
+## 🎭 Evolution Stages
 
-## Screenshots
+| Stage | Level | Description |
+|-------|-------|-------------|
+| 🐣 Baby Coder | 1-9 | Just starting out |
+| 🐱 Junior Developer | 10-24 | Learning the ropes |
+| 🦄 Senior Developer | 25-49 | Experienced coder |
+| 🐉 Tech Lead | 50-99 | Leading projects |
+| ⭐ Code Legend | 100+ | Master of code |
 
-![image](./assets/Screenshot.png)
+## 📷 Screenshots
 
-## Requirements
+![Sidebar View](./assets/Screenshot.png)
 
-- Visual Studio Code 1.100.0 or higher
-- Git (for commit tracking)
-
-## Extension Settings
+## ⚙️ Extension Settings
 
 - `codePaw.petName`: Set your pet's name (default: "Pypy")
-- `codePaw.autoSave`: Automatically save pet progress (default: true)
+- `codePaw.autoSave`: Auto-save pet progress (default: true)
 
-## Known Issues
+## 🏆 Achievements
 
-None currently known. Please report issues on GitHub.
+- **First Milestone**: Reach level 10
+- **Save Master**: 100 file saves
+- **Polyglot**: Use 5+ programming languages  
+- **Commit Master**: Make 50+ commits
+- **Bug Hunter**: Fix 20+ bugs
+- **Marathon Coder**: Code for 2+ hours straight
 
-## Release Notes
+## 🛠️ Requirements
 
-### 1.0.0
-- Initial release
-- Basic pet evolution system
-- Git integration
-- Time tracking
-- Achievement system
+- Visual Studio Code 1.100.0+
+- Git (for commit tracking)
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions welcome! Please submit PRs to our [GitHub repo](https://github.com/pyro18/codepaw).
 
-## License
+## 📄 License
 
-This extension is licensed under the MIT License.
+MIT License - see [LICENSE](LICENSE) file.
+
+## 💖 Support
+
+If you enjoy CodePaw, consider:
+- ⭐ Starring the repo
+- 🐛 Reporting bugs
+- 💡 Suggesting features
+- ☕ [Buy me a coffee](https://buymeacoffee.com/pyro18)
+
+---
+
+**Happy coding with your new virtual companion! 🐾✨**
