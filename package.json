@@ -1,0 +1,101 @@
+{
+  "name": "codepaw",
+  "displayName": "CodePaw",
+  "description": "Your virtual pet that evolves with your coding habits",
+  "version": "1.0.0",
+  "publisher": "Pyro18",
+  "author": {
+    "name": "Marius Noroaca",
+    "email": "marius.noroaca@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/Pyro18/codepaw",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pyro18/codepaw.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Pyro18/codepaw/issues"
+  },
+  "keywords": [
+    "pet", "coding", "gamification", "productivity", "git", "tracking"
+  ],
+  "categories": ["Other"],
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#FF6B6B",
+    "theme": "dark"
+  },
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codePaw.showPet",
+        "title": "Show CodePaw",
+        "category": "CodePaw",
+        "icon": "$(heart)"
+      },
+      {
+        "command": "codePaw.feedPet",
+        "title": "Feed Pet",
+        "category": "CodePaw"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codePaw",
+          "title": "CodePaw",
+          "icon": "$(heart)"
+        }
+      ]
+    },
+    "views": {
+      "codePaw": [
+        {
+          "type": "webview",
+          "id": "codePaw.petView",
+          "name": "Your Pet"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "CodePaw",
+      "properties": {
+        "codePaw.petName": {
+          "type": "string",
+          "default": "Pypy",
+          "description": "Name of your virtual pet"
+        },
+        "codePaw.autoSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically save pet progress"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.100.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.25.1",
+    "typescript": "^5.8.3"
+  }
+}
