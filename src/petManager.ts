@@ -176,8 +176,10 @@ export class PetManager {
             });
         }
 
+        // ✅ FIXED: Check achievements EVERY time, not just on level up
+        this.checkAchievements();
+
         if (oldLevel !== this.pet.level) {
-            this.checkAchievements();
             vscode.window.showInformationMessage(
                 `🌟 ${this.pet.name} reached level ${this.pet.level}!`
             );
@@ -324,40 +326,85 @@ export class PetManager {
     private checkAchievements() {
         const newAchievements: string[] = [];
 
+        // Level-based achievements
         if (this.pet.level >= 10 && !this.pet.achievements.includes('first_milestone')) {
             newAchievements.push('first_milestone');
         }
+
+        // Coding activity achievements
         if (this.pet.stats.totalSaves >= 100 && !this.pet.achievements.includes('save_master')) {
             newAchievements.push('save_master');
         }
+
         if (this.pet.stats.languagesUsed.size >= 5 && !this.pet.achievements.includes('polyglot')) {
             newAchievements.push('polyglot');
         }
 
+        if (this.pet.stats.filesCreated >= 50 && !this.pet.achievements.includes('file_creator')) {
+            newAchievements.push('file_creator');
+        }
+
+        // Git achievements
         if (this.pet.stats.commitsCount >= 50 && !this.pet.achievements.includes('commit_master')) {
             newAchievements.push('commit_master');
         }
-        if (this.pet.stats.currentStreak >= 30 && !this.pet.achievements.includes('month_streak')) {
-            newAchievements.push('month_streak');
-        }
+
         if (this.pet.stats.bugFixCount >= 20 && !this.pet.achievements.includes('bug_hunter')) {
             newAchievements.push('bug_hunter');
         }
-        if (this.pet.stats.testFilesCreated >= 10 && !this.pet.achievements.includes('test_writer')) {
-            newAchievements.push('test_writer');
+
+        if (this.pet.stats.featureCount >= 10 && !this.pet.achievements.includes('feature_master')) {
+            newAchievements.push('feature_master');
         }
-        if (this.pet.stats.longestSession >= 120 && !this.pet.achievements.includes('marathon_coder')) {
-            newAchievements.push('marathon_coder');
-        }
+
         if (this.pet.stats.repositoriesUsed.size >= 5 && !this.pet.achievements.includes('repo_hopper')) {
             newAchievements.push('repo_hopper');
         }
 
+        // Quality achievements
+        if (this.pet.stats.testFilesCreated >= 10 && !this.pet.achievements.includes('test_writer')) {
+            newAchievements.push('test_writer');
+        }
+
+        // Time & dedication achievements
+        if (this.pet.stats.currentStreak >= 30 && !this.pet.achievements.includes('month_streak')) {
+            newAchievements.push('month_streak');
+        }
+
+        if (this.pet.stats.longestSession >= 120 && !this.pet.achievements.includes('marathon_coder')) {
+            newAchievements.push('marathon_coder');
+        }
+
+        if (this.pet.stats.debugSessions >= 25 && !this.pet.achievements.includes('debug_master')) {
+            newAchievements.push('debug_master');
+        }
+
+        // Advanced achievements
+        if (this.pet.totalXpEarned >= 10000 && !this.pet.achievements.includes('xp_collector')) {
+            newAchievements.push('xp_collector');
+        }
+
+        if (this.pet.stats.totalLines >= 10000 && !this.pet.achievements.includes('code_machine')) {
+            newAchievements.push('code_machine');
+        }
+
+        // Process new achievements
         newAchievements.forEach(achievement => {
             this.pet.achievements.push(achievement);
-            vscode.window.showInformationMessage(
-                `🏆 Achievement unlocked: ${this.getAchievementName(achievement)}!`
-            );
+            const achievementName = this.getAchievementName(achievement);
+            
+            // Show notification with config check
+            const config = vscode.workspace.getConfiguration('codePaw');
+            if (config.get('enableNotifications', true)) {
+                vscode.window.showInformationMessage(
+                    `🏆 Achievement unlocked: ${achievementName}!`,
+                    'View Achievements'
+                ).then(selection => {
+                    if (selection === 'View Achievements') {
+                        vscode.commands.executeCommand('codePaw.showAchievements');
+                    }
+                });
+            }
         });
     }
 
@@ -371,7 +418,12 @@ export class PetManager {
             'bug_hunter': 'Bug Hunter',
             'test_writer': 'Test Writer',
             'marathon_coder': 'Marathon Coder',
-            'repo_hopper': 'Repository Hopper'
+            'repo_hopper': 'Repository Hopper',
+            'file_creator': 'File Creator',
+            'feature_master': 'Feature Master',
+            'debug_master': 'Debug Master',
+            'xp_collector': 'XP Collector',
+            'code_machine': 'Code Machine'
         };
         return names[achievement] || achievement;
     }

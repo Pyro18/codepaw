@@ -18,9 +18,16 @@
     "url": "https://github.com/Pyro18/codepaw/issues"
   },
   "keywords": [
-    "pet", "coding", "gamification", "productivity", "git", "tracking"
+    "pet",
+    "coding",
+    "gamification",
+    "productivity",
+    "git",
+    "tracking"
   ],
-  "categories": ["Other"],
+  "categories": [
+    "Other"
+  ],
   "engines": {
     "vscode": "^1.100.0"
   },
@@ -34,15 +41,40 @@
   "contributes": {
     "commands": [
       {
-        "command": "codePaw.showPet",
-        "title": "Show CodePaw",
+        "command": "codePaw.showStats",
+        "title": "Open CodePaw Dashboard",
         "category": "CodePaw",
-        "icon": "$(heart)"
+        "icon": "$(graph)"
+      },
+      {
+        "command": "codePaw.showAchievements",
+        "title": "View Achievements",
+        "category": "CodePaw",
+        "icon": "$(bullseye)"
       },
       {
         "command": "codePaw.feedPet",
         "title": "Feed Pet",
-        "category": "CodePaw"
+        "category": "CodePaw",
+        "icon": "$(gift)"
+      },
+      {
+        "command": "codePaw.petStatus",
+        "title": "Pet Status",
+        "category": "CodePaw",
+        "icon": "$(info)"
+      },
+      {
+        "command": "codePaw.resetPet",
+        "title": "Reset Pet",
+        "category": "CodePaw",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "codePaw.checkAchievements",
+        "title": "Check Achievements",
+        "category": "CodePaw",
+        "icon": "$(trophy)"
       }
     ],
     "viewsContainers": {
@@ -59,7 +91,52 @@
         {
           "type": "webview",
           "id": "codePaw.petView",
-          "name": "Your Pet"
+          "name": "Your Pet",
+          "when": "true"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "codePaw.showStats",
+          "when": "view == codePaw.petView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "codePaw.showAchievements",
+          "when": "view == codePaw.petView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "codePaw.feedPet",
+          "when": "view == codePaw.petView",
+          "group": "actions@1"
+        },
+        {
+          "command": "codePaw.checkAchievements",
+          "when": "view == codePaw.petView",
+          "group": "actions@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "codePaw.showStats"
+        },
+        {
+          "command": "codePaw.showAchievements"
+        },
+        {
+          "command": "codePaw.feedPet"
+        },
+        {
+          "command": "codePaw.petStatus"
+        },
+        {
+          "command": "codePaw.resetPet"
+        },
+        {
+          "command": "codePaw.checkAchievements"
         }
       ]
     },
@@ -75,6 +152,16 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically save pet progress"
+        },
+        "codePaw.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show pet status in status bar"
+        },
+        "codePaw.enableNotifications": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable achievement and milestone notifications"
         }
       }
     }
@@ -83,6 +170,7 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
+    "test": "vscode-test",
     "package": "vsce package",
     "publish": "vsce publish"
   },
