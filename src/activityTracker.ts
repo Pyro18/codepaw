@@ -16,7 +16,6 @@ export class ActivityTracker {
 
     private async initializeGitExtension() {
         try {
-            // Ottieni l'estensione Git integrata di VSCode
             const gitExtension = vscode.extensions.getExtension('vscode.git')?.exports;
             this.gitExtension = gitExtension?.getAPI(1);
             
@@ -32,12 +31,10 @@ export class ActivityTracker {
     private setupGitTracking() {
         if (!this.gitExtension) return;
 
-        // Traccia i repository aperti
         this.gitExtension.repositories.forEach((repo: any) => {
             this.setupRepositoryTracking(repo);
         });
 
-        // Traccia nuovi repository che vengono aperti
         this.gitExtension.onDidOpenRepository((repo: any) => {
             this.setupRepositoryTracking(repo);
         });
@@ -46,12 +43,10 @@ export class ActivityTracker {
     private setupRepositoryTracking(repository: any) {
         console.log('🔗 Setting up tracking for repository:', repository.rootUri.path);
 
-        // Traccia i commit
         repository.state.onDidChange(() => {
             this.checkForNewCommits(repository);
         });
 
-        // Traccia modifiche al branch
         repository.state.onDidChange(() => {
             this.trackBranchChanges(repository);
         });
@@ -63,12 +58,11 @@ export class ActivityTracker {
             if (commits.length > 0) {
                 const lastCommit = commits[0];
                 const commitMessage = lastCommit.message || '';
-                
-                // XP basato sulla lunghezza del messaggio di commit
-                let xp = 25; // Base XP per commit
-                if (commitMessage.length > 50) xp += 10; // Messaggio dettagliato
-                if (commitMessage.includes('fix') || commitMessage.includes('bug')) xp += 15; // Bug fix
-                if (commitMessage.includes('feat') || commitMessage.includes('feature')) xp += 20; // Nuova feature
+
+                let xp = 25;
+                if (commitMessage.length > 50) xp += 10;
+                if (commitMessage.includes('fix') || commitMessage.includes('bug')) xp += 15;
+                if (commitMessage.includes('feat') || commitMessage.includes('feature')) xp += 20;
                 
                 this.petManager.addActivity('commit', xp, {
                     message: commitMessage,
@@ -89,7 +83,6 @@ export class ActivityTracker {
     private trackBranchChanges(repository: any) {
         const currentBranch = repository.state.HEAD?.name;
         if (currentBranch && currentBranch !== 'main' && currentBranch !== 'master') {
-            // Bonus XP per lavorare su feature branch
             this.petManager.addActivity('branch', 5, { branch: currentBranch });
         }
     }
@@ -103,7 +96,6 @@ export class ActivityTracker {
                 const language = document.languageId;
                 const lineCount = document.lineCount;
                 
-                // XP basato sulla dimensione del file
                 let xp = 15;
                 if (lineCount > 100) xp += 5;
                 if (lineCount > 500) xp += 10;
@@ -122,14 +114,14 @@ export class ActivityTracker {
                 event.files.forEach((file) => {
                     const fileName = file.path.split('/').pop() || '';
                     const extension = fileName.split('.').pop() || '';
-                    
+
                     let xp = 20;
-                    // Bonus per tipi di file specifici
+
                     if (['test', 'spec'].some(keyword => fileName.toLowerCase().includes(keyword))) {
-                        xp += 15; // Bonus per file di test
+                        xp += 15;
                     }
                     if (['config', 'setup'].some(keyword => fileName.toLowerCase().includes(keyword))) {
-                        xp += 10; // Bonus per file di configurazione
+                        xp += 10;
                     }
                     
                     this.petManager.addActivity('newFile', xp, { 
@@ -152,7 +144,7 @@ export class ActivityTracker {
                         const totalChanges = event.contentChanges.reduce((total, change) => {
                             const addedLines = (change.text.match(/\n/g) || []).length;
                             const addedChars = change.text.length;
-                            return total + addedLines + Math.floor(addedChars / 50); // 1 XP ogni 50 caratteri
+                            return total + addedLines + Math.floor(addedChars / 50);
                         }, 0);
                         
                         if (totalChanges > 0) {
@@ -225,19 +217,16 @@ export class ActivityTracker {
 
     private startTimeTracking() {
         this.timeTrackingInterval = setInterval(() => {
-            // Controlla se VSCode è attivo e l'utente sta scrivendo codice
             if (vscode.window.activeTextEditor) {
                 const now = Date.now();
-                const sessionTime = Math.floor((now - this.sessionStartTime) / (1000 * 60)); // minuti
-                
-                // Ogni 5 minuti di coding attivo
+                const sessionTime = Math.floor((now - this.sessionStartTime) / (1000 * 60));
+
                 if (sessionTime > 0 && sessionTime % 5 === 0) {
                     this.petManager.addActivity('timeActive', 3, {
                         sessionMinutes: sessionTime
                     });
                 }
-                
-                // Bonus per sessioni lunghe
+
                 if (sessionTime === 30) {
                     vscode.window.showInformationMessage('🏆 30 minutes of coding! +50 XP bonus!');
                     this.petManager.addActivity('milestone', 50, { type: '30min' });
@@ -247,7 +236,7 @@ export class ActivityTracker {
                     this.petManager.addActivity('milestone', 100, { type: '1hour' });
                 }
             }
-        }, 60000); // Ogni minuto
+        }, 60000);
     }
 
     // === METODI UTILI PER STATISTICHE AVANZATE ===

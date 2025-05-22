@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { PetManager, PetData } from './petManager';
 
 export class PetWebviewProvider implements vscode.WebviewViewProvider {
-  public static readonly viewType = 'codePaw.petView'; // Changed from codingPet.petView
+  public static readonly viewType = 'codePaw.petView';
   private _view?: vscode.WebviewView;
 
   constructor(
@@ -217,7 +217,7 @@ export class PetWebviewProvider implements vscode.WebviewViewProvider {
 
 export class PetWebviewPanel {
   public static currentPanel: PetWebviewPanel | undefined;
-  public static readonly viewType = 'codePaw'; // Changed from codingPet
+  public static readonly viewType = 'codePaw';
 
   public static createOrShow(extensionUri: vscode.Uri, petManager: PetManager) {
     const column = vscode.window.activeTextEditor
@@ -231,7 +231,7 @@ export class PetWebviewPanel {
 
     const panel = vscode.window.createWebviewPanel(
       PetWebviewPanel.viewType,
-      'Code Paw', // Changed from Coding Pet
+      'Code Paw',
       column || vscode.ViewColumn.One,
       {
         enableScripts: true,
@@ -257,7 +257,6 @@ export class PetWebviewPanel {
   }
 
   private getHtmlForWebview(): string {
-    // Same HTML as the sidebar but in a larger version
-    return `<!DOCTYPE html><html><!-- Similar HTML but optimized for panel --></html>`;
+    return `<!DOCTYPE html><html></html>`;
   }
 }

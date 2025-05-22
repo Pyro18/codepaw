@@ -61,7 +61,6 @@ export class PetManager {
         const config = vscode.workspace.getConfiguration('codePaw');
         
         if (saved) {
-            // Migra dati vecchi e converti Set
             if (saved.stats.languagesUsed && Array.isArray(saved.stats.languagesUsed)) {
                 saved.stats.languagesUsed = new Set(saved.stats.languagesUsed);
             } else {
@@ -74,7 +73,6 @@ export class PetManager {
                 saved.stats.repositoriesUsed = new Set(saved.stats.repositoriesUsed);
             }
             
-            // Assegna valori di default per nuovi campi
             return {
                 ...saved,
                 totalXpEarned: saved.totalXpEarned || 0,
@@ -160,20 +158,16 @@ export class PetManager {
         this.pet.energy = Math.min(100, this.pet.energy + Math.floor(xpGain / 5));
         this.pet.lastActive = Date.now();
 
-        // Aggiorna statistiche basate sul tipo di attività
         this.updateStats(type, metadata);
 
-        // Gestisci level up
         while (this.pet.xp >= this.pet.maxXp) {
             this.pet.xp -= this.pet.maxXp;
             this.pet.level++;
             this.pet.maxXp = Math.floor(this.pet.maxXp * 1.3);
         }
 
-        // Controlla evoluzione
         this.updateStage();
         
-        // Se è evoluto, salva nella storia
         if (oldStage !== this.pet.stage) {
             this.pet.evolutionHistory.push({
                 stage: this.pet.stage,
@@ -182,7 +176,6 @@ export class PetManager {
             });
         }
 
-        // Controlla achievement
         if (oldLevel !== this.pet.level) {
             this.checkAchievements();
             vscode.window.showInformationMessage(
@@ -224,11 +217,9 @@ export class PetManager {
                 this.pet.stats.commitsCount++;
                 if (metadata?.message) {
                     this.pet.stats.lastCommitMessage = metadata.message;
-                    // Calcola media lunghezza commit
                     this.pet.stats.averageCommitMessage = 
                         (this.pet.stats.averageCommitMessage + metadata.message.length) / 2;
-                    
-                    // Conta bug fix e feature
+
                     if (metadata.message.toLowerCase().includes('fix') || 
                         metadata.message.toLowerCase().includes('bug')) {
                         this.pet.stats.bugFixCount++;
@@ -271,8 +262,7 @@ export class PetManager {
 
     private updateStage() {
         const oldStage = this.pet.stage;
-        
-        // Criteri più sofisticati per l'evoluzione
+
         if (this.pet.level >= 100 && this.pet.stats.commitsCount >= 500) {
             this.pet.stage = 'legend';
         } else if (this.pet.level >= 50 && this.pet.stats.commitsCount >= 100) {
@@ -310,7 +300,6 @@ export class PetManager {
             const daysDiff = Math.floor((todayDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
             
             if (daysDiff === 1) {
-                // Streak continua
                 this.pet.stats.currentStreak++;
                 this.pet.stats.longestStreak = Math.max(
                     this.pet.stats.longestStreak, 
@@ -324,7 +313,6 @@ export class PetManager {
                     this.addActivity('streak', 100, { days: this.pet.stats.currentStreak });
                 }
             } else if (daysDiff > 1) {
-                // Streak interrotta
                 this.pet.stats.currentStreak = 1;
             }
             
@@ -335,8 +323,7 @@ export class PetManager {
 
     private checkAchievements() {
         const newAchievements: string[] = [];
-        
-        // Achievement esistenti
+
         if (this.pet.level >= 10 && !this.pet.achievements.includes('first_milestone')) {
             newAchievements.push('first_milestone');
         }
@@ -346,8 +333,7 @@ export class PetManager {
         if (this.pet.stats.languagesUsed.size >= 5 && !this.pet.achievements.includes('polyglot')) {
             newAchievements.push('polyglot');
         }
-        
-        // NUOVI ACHIEVEMENT
+
         if (this.pet.stats.commitsCount >= 50 && !this.pet.achievements.includes('commit_master')) {
             newAchievements.push('commit_master');
         }
@@ -401,7 +387,7 @@ export class PetManager {
                 this.savePetData();
                 this.onPetUpdate.fire(this.pet);
             }
-        }, 300000); // Ogni 5 minuti
+        }, 300000);
     }
 
     public getPetData(): PetData {
