@@ -1,5 +1,12 @@
 # Change Log
 
+
+## [1.0.1] - 2025-06-12
+
+### Fixed
+- XP multiplier for streaks
+
+
 ## [1.0.0] - 2025-01-01
 
 ### Added
@@ -17,3 +24,4 @@
 - Pet happiness and energy system
 - Streak tracking for daily coding
 - Multiple achievement categories
+
