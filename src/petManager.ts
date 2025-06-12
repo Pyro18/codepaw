@@ -152,8 +152,8 @@ export class PetManager {
         const oldLevel = this.pet.level;
         const oldStage = this.pet.stage;
         
-        this.pet.xp += xpGain;
-        this.pet.totalXpEarned += xpGain;
+        this.pet.xp += Math.floor(xpGain * (1 + (this.pet.currentStreak - 1) / 10));
+        this.pet.totalXpEarned += Math.floor(xpGain * (1 + (this.pet.currentStreak - 1) / 10));
         this.pet.happiness = Math.min(100, this.pet.happiness + Math.floor(xpGain / 3));
         this.pet.energy = Math.min(100, this.pet.energy + Math.floor(xpGain / 5));
         this.pet.lastActive = Date.now();
