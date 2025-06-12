@@ -206,3 +206,6 @@ function getPetEmoji(stage: string, happiness: number): string {
 export function deactivate() {
     console.log('👋 CodePaw deactivated');
 }
+
+
+
