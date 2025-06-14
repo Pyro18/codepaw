@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { SyncManager } from './syncManager';
 
 export interface PetStats {
     totalSaves: number;
@@ -40,17 +41,17 @@ export interface PetData {
     // === NEW FIELDS ===
     totalXpEarned: number;
     createdAt: number;
-    evolutionHistory: Array<{stage: string, date: number, level: number}>;
+    evolutionHistory: Array<{ stage: string, date: number, level: number }>;
 }
 
 export class PetManager {
     private pet: PetData;
     private context: vscode.ExtensionContext;
+    private syncManager: SyncManager;
     private onPetUpdate: vscode.EventEmitter<PetData> = new vscode.EventEmitter<PetData>();
-    public readonly onDidUpdatePet: vscode.Event<PetData> = this.onPetUpdate.event;
-
-    constructor(context: vscode.ExtensionContext) {
+    public readonly onDidUpdatePet: vscode.Event<PetData> = this.onPetUpdate.event; constructor(context: vscode.ExtensionContext) {
         this.context = context;
+        this.syncManager = new SyncManager(context);
         this.pet = this.loadPetData();
         this.startDecayTimer();
         this.checkDailyStreak();
@@ -59,20 +60,20 @@ export class PetManager {
     private loadPetData(): PetData {
         const saved = this.context.globalState.get<any>('petData');
         const config = vscode.workspace.getConfiguration('codePaw');
-        
+
         if (saved) {
             if (saved.stats.languagesUsed && Array.isArray(saved.stats.languagesUsed)) {
                 saved.stats.languagesUsed = new Set(saved.stats.languagesUsed);
             } else {
                 saved.stats.languagesUsed = new Set();
             }
-            
+
             if (!saved.stats.repositoriesUsed) {
                 saved.stats.repositoriesUsed = new Set();
             } else if (Array.isArray(saved.stats.repositoriesUsed)) {
                 saved.stats.repositoriesUsed = new Set(saved.stats.repositoriesUsed);
             }
-            
+
             return {
                 ...saved,
                 totalXpEarned: saved.totalXpEarned || 0,
@@ -97,7 +98,7 @@ export class PetManager {
                 }
             };
         }
-        
+
         return {
             name: config.get('petName', 'Pypy'),
             level: 1,
@@ -151,7 +152,7 @@ export class PetManager {
     public addActivity(type: string, xpGain: number, metadata?: any) {
         const oldLevel = this.pet.level;
         const oldStage = this.pet.stage;
-        
+
         this.pet.xp += Math.floor(xpGain * (1 + (this.pet.stats.currentStreak - 1) / 10));
         this.pet.totalXpEarned += Math.floor(xpGain * (1 + (this.pet.stats.currentStreak - 1) / 10));
         this.pet.happiness = Math.min(100, this.pet.happiness + Math.floor(xpGain / 3));
@@ -167,7 +168,7 @@ export class PetManager {
         }
 
         this.updateStage();
-        
+
         if (oldStage !== this.pet.stage) {
             this.pet.evolutionHistory.push({
                 stage: this.pet.stage,
@@ -187,6 +188,9 @@ export class PetManager {
 
         this.savePetData();
         this.onPetUpdate.fire(this.pet);
+
+        // Auto-sync after significant progress
+        this.checkAutoSync(oldLevel);
     }
 
     private updateStats(type: string, metadata?: any) {
@@ -200,33 +204,33 @@ export class PetManager {
                     this.pet.stats.totalLines += metadata.lineCount;
                 }
                 break;
-                
+
             case 'newFile':
                 this.pet.stats.filesCreated++;
-                if (metadata?.fileName?.toLowerCase().includes('test') || 
+                if (metadata?.fileName?.toLowerCase().includes('test') ||
                     metadata?.fileName?.toLowerCase().includes('spec')) {
                     this.pet.stats.testFilesCreated++;
                 }
                 break;
-                
+
             case 'typing':
                 if (metadata?.changes) {
                     this.pet.stats.totalLines += metadata.changes;
                 }
                 break;
-                
+
             case 'commit':
                 this.pet.stats.commitsCount++;
                 if (metadata?.message) {
                     this.pet.stats.lastCommitMessage = metadata.message;
-                    this.pet.stats.averageCommitMessage = 
+                    this.pet.stats.averageCommitMessage =
                         (this.pet.stats.averageCommitMessage + metadata.message.length) / 2;
 
-                    if (metadata.message.toLowerCase().includes('fix') || 
+                    if (metadata.message.toLowerCase().includes('fix') ||
                         metadata.message.toLowerCase().includes('bug')) {
                         this.pet.stats.bugFixCount++;
                     }
-                    if (metadata.message.toLowerCase().includes('feat') || 
+                    if (metadata.message.toLowerCase().includes('feat') ||
                         metadata.message.toLowerCase().includes('feature')) {
                         this.pet.stats.featureCount++;
                     }
@@ -235,26 +239,26 @@ export class PetManager {
                     this.pet.stats.repositoriesUsed.add(metadata.repository);
                 }
                 break;
-                
+
             case 'branch':
                 if (metadata?.branch) {
                     this.pet.stats.currentBranch = metadata.branch;
                 }
                 break;
-                
+
             case 'debug':
                 this.pet.stats.debugSessions++;
                 break;
-                
+
             case 'terminal':
                 this.pet.stats.terminalSessions++;
                 break;
-                
+
             case 'timeActive':
                 if (metadata?.sessionMinutes) {
                     this.pet.stats.totalSessionTime += metadata.sessionMinutes;
                     this.pet.stats.longestSession = Math.max(
-                        this.pet.stats.longestSession, 
+                        this.pet.stats.longestSession,
                         metadata.sessionMinutes
                     );
                 }
@@ -280,12 +284,12 @@ export class PetManager {
         if (oldStage !== this.pet.stage) {
             const stageNames = {
                 baby: 'Baby Coder',
-                teen: 'Junior Developer', 
+                teen: 'Junior Developer',
                 adult: 'Senior Developer',
                 master: 'Tech Lead',
                 legend: 'Code Legend'
             };
-            
+
             vscode.window.showInformationMessage(
                 `🎉 ${this.pet.name} evolved into ${stageNames[this.pet.stage]}!`
             );
@@ -295,19 +299,19 @@ export class PetManager {
     private checkDailyStreak() {
         const today = new Date().toDateString();
         const lastActive = this.pet.stats.lastActiveDate;
-        
+
         if (lastActive !== today) {
             const lastDate = new Date(lastActive);
             const todayDate = new Date(today);
             const daysDiff = Math.floor((todayDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
-            
+
             if (daysDiff === 1) {
                 this.pet.stats.currentStreak++;
                 this.pet.stats.longestStreak = Math.max(
-                    this.pet.stats.longestStreak, 
+                    this.pet.stats.longestStreak,
                     this.pet.stats.currentStreak
                 );
-                
+
                 if (this.pet.stats.currentStreak % 7 === 0) {
                     vscode.window.showInformationMessage(
                         `🔥 ${this.pet.stats.currentStreak} day coding streak! +100 XP bonus!`
@@ -317,7 +321,7 @@ export class PetManager {
             } else if (daysDiff > 1) {
                 this.pet.stats.currentStreak = 1;
             }
-            
+
             this.pet.stats.lastActiveDate = today;
             this.savePetData();
         }
@@ -392,7 +396,7 @@ export class PetManager {
         newAchievements.forEach(achievement => {
             this.pet.achievements.push(achievement);
             const achievementName = this.getAchievementName(achievement);
-            
+
             // Show notification with config check
             const config = vscode.workspace.getConfiguration('codePaw');
             if (config.get('enableNotifications', true)) {
@@ -431,7 +435,7 @@ export class PetManager {
     private startDecayTimer() {
         setInterval(() => {
             const hoursSinceActive = (Date.now() - this.pet.lastActive) / (1000 * 60 * 60);
-            
+
             if (hoursSinceActive > 2) {
                 const decayAmount = Math.min(2, Math.floor(hoursSinceActive / 2));
                 this.pet.happiness = Math.max(0, this.pet.happiness - decayAmount);
@@ -486,5 +490,107 @@ export class PetManager {
         };
         this.savePetData();
         this.onPetUpdate.fire(this.pet);
+    }
+
+    // === SYNC METHODS ===
+
+    public async setupSync(): Promise<boolean> {
+        return await this.syncManager.setupSync();
+    }
+
+    public async syncToCloud(): Promise<boolean> {
+        return await this.syncManager.uploadData(this.pet);
+    } public async syncFromCloud(): Promise<boolean> {
+        const petData = await this.syncManager.downloadData();
+        if (petData) {
+            // Keep local name from config if different
+            const config = vscode.workspace.getConfiguration('codePaw');
+            const localName = config.get('petName', 'Pypy');
+
+            this.pet = {
+                ...petData,
+                name: localName // Keep local name
+            };
+
+            // Convert Sets back from arrays
+            if (Array.isArray(this.pet.stats.languagesUsed)) {
+                this.pet.stats.languagesUsed = new Set(this.pet.stats.languagesUsed);
+            }
+            if (Array.isArray(this.pet.stats.repositoriesUsed)) {
+                this.pet.stats.repositoriesUsed = new Set(this.pet.stats.repositoriesUsed);
+            }
+
+            this.savePetData();
+            this.onPetUpdate.fire(this.pet);
+            return true;
+        }
+        return false;
+    }
+
+    public async getSyncStatus(): Promise<{ configured: boolean; lastSync?: Date; deviceId?: string }> {
+        return await this.syncManager.getSyncStatus();
+    }
+
+    public async resetSync(): Promise<void> {
+        await this.syncManager.resetSync();
+    }
+
+    private async checkAutoSync(oldLevel: number): Promise<void> {
+        const config = vscode.workspace.getConfiguration('codePaw');
+        const autoSync = config.get('autoSync', false);
+
+        if (!autoSync) {
+            return;
+        }
+
+        // Auto-sync su level up significativi (ogni 5 livelli) o evoluzione
+        const shouldAutoSync =
+            (this.pet.level !== oldLevel && this.pet.level % 5 === 0) ||
+            (this.pet.achievements.length > 0 && this.pet.level !== oldLevel);
+
+        if (shouldAutoSync) {
+            try {
+                const success = await this.syncManager.uploadData(this.pet); if (success) {
+                    vscode.window.showInformationMessage(
+                        `📤 Data synced automatically! (Level ${this.pet.level})`,
+                        { modal: false }
+                    );
+                }
+            } catch (error) {
+                console.error('Auto-sync failed:', error);
+            }
+        }
+    }
+
+    public async checkSyncOnStartup(): Promise<void> {
+        const config = vscode.workspace.getConfiguration('codePaw');
+        const syncOnStartup = config.get('syncOnStartup', false);
+
+        if (!syncOnStartup) {
+            return;
+        }
+
+        try {
+            const status = await this.getSyncStatus();
+            if (status.configured && status.lastSync) {
+                const localLastActive = this.pet.lastActive;
+                const cloudLastSync = status.lastSync.getTime();
+
+                // Se il cloud è più recente di 1 ora rispetto ai dati locali
+                if (cloudLastSync > localLastActive + (60 * 60 * 1000)) {
+                    const choice = await vscode.window.showInformationMessage(
+                        '☁️ Found newer data in cloud. Do you want to download it?',
+                        'Yes, download',
+                        'No, keep local'
+                    );
+
+                    if (choice === 'Yes, download') {
+                        await this.syncFromCloud();
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Startup sync check failed:', error);
+        }
     }
 }

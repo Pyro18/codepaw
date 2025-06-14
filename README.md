@@ -10,6 +10,24 @@
 - ⏱️ **Time Tracking**: Milestone rewards for coding sessions
 - 🏆 **Achievement System**: Unlock achievements as you code
 - 📈 **Statistics Dashboard**: Track your coding progress over time
+- ☁️ **Cloud Sync**: Sync your pet data across devices with GitHub
+
+## 🔄 New: Cloud Synchronization
+
+Keep your pet's progress synchronized across all your devices!
+
+- **GitHub Integration**: Uses GitHub Gists for secure cloud storage
+- **Multi-Device Support**: Access your pet from any device
+- **Auto-Sync**: Optional automatic synchronization
+- **Privacy First**: Your data stays in your private GitHub Gists
+
+### Quick Setup
+1. Open Command Palette (`Ctrl+Shift+P`)
+2. Run `CodePaw: Setup Sync with GitHub`
+3. Follow the setup instructions
+4. Your pet is now synchronized! 🎉
+
+📖 **[Complete Sync Guide](SYNC_GUIDE.md)** | ⚡ **[Quick Start](SYNC_QUICKSTART.md)**
 
 ## 🚀 How It Works
 

@@ -2,59 +2,59 @@ import * as vscode from 'vscode';
 import { PetManager, PetData } from './petManager';
 
 export class PetWebviewProvider implements vscode.WebviewViewProvider {
-  public static readonly viewType = 'codePaw.petView';
-  private _view?: vscode.WebviewView;
+    public static readonly viewType = 'codePaw.petView';
+    private _view?: vscode.WebviewView;
 
-  constructor(
-    private readonly _extensionUri: vscode.Uri,
-    private readonly petManager: PetManager
-  ) {
-    this.petManager.onDidUpdatePet(() => {
-      this.updateWebview();
-    });
-  }
-
-  public resolveWebviewView(
-    webviewView: vscode.WebviewView,
-    context: vscode.WebviewViewResolveContext,
-    _token: vscode.CancellationToken,
-  ) {
-    this._view = webviewView;
-
-    webviewView.webview.options = {
-      enableScripts: true,
-      localResourceRoots: [this._extensionUri]
-    };
-
-    webviewView.webview.html = this.getHtmlForWebview(webviewView.webview);
-    this.updateWebview();
-
-    webviewView.webview.onDidReceiveMessage(data => {
-      switch (data.type) {
-        case 'feedPet':
-          this.petManager.addActivity('manual', data.xp);
-          break;
-        case 'resetPet':
-          this.petManager.resetPet();
-          break;
-        case 'switchTab':
-          // Handle tab switching in the webview
-          break;
-      }
-    });
-  }
-
-  private updateWebview() {
-    if (this._view) {
-      this._view.webview.postMessage({
-        type: 'updatePet',
-        data: this.petManager.getPetData()
-      });
+    constructor(
+        private readonly _extensionUri: vscode.Uri,
+        private readonly petManager: PetManager
+    ) {
+        this.petManager.onDidUpdatePet(() => {
+            this.updateWebview();
+        });
     }
-  }
 
-  private getHtmlForWebview(webview: vscode.Webview): string {
-    return `
+    public resolveWebviewView(
+        webviewView: vscode.WebviewView,
+        context: vscode.WebviewViewResolveContext,
+        _token: vscode.CancellationToken,
+    ) {
+        this._view = webviewView;
+
+        webviewView.webview.options = {
+            enableScripts: true,
+            localResourceRoots: [this._extensionUri]
+        };
+
+        webviewView.webview.html = this.getHtmlForWebview(webviewView.webview);
+        this.updateWebview();
+
+        webviewView.webview.onDidReceiveMessage(data => {
+            switch (data.type) {
+                case 'feedPet':
+                    this.petManager.addActivity('manual', data.xp);
+                    break;
+                case 'resetPet':
+                    this.petManager.resetPet();
+                    break;
+                case 'switchTab':
+                    // Handle tab switching in the webview
+                    break;
+            }
+        });
+    }
+
+    private updateWebview() {
+        if (this._view) {
+            this._view.webview.postMessage({
+                type: 'updatePet',
+                data: this.petManager.getPetData()
+            });
+        }
+    }
+
+    private getHtmlForWebview(webview: vscode.Webview): string {
+        return `
         <!DOCTYPE html>
         <html>
         <head>
@@ -908,5 +908,5 @@ export class PetWebviewProvider implements vscode.WebviewViewProvider {
             </script>
         </body>
         </html>`;
-  }
+    }
 }

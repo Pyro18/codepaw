@@ -2,7 +2,7 @@
   "name": "codepaw",
   "displayName": "CodePaw",
   "description": "Your virtual pet that evolves with your coding habits",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "publisher": "Pyro18",
   "author": {
     "name": "Marius Noroaca",
@@ -75,6 +75,36 @@
         "title": "Check Achievements",
         "category": "CodePaw",
         "icon": "$(trophy)"
+      },
+      {
+        "command": "codePaw.setupSync",
+        "title": "Setup Sync with GitHub",
+        "category": "CodePaw",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "codePaw.syncToCloud",
+        "title": "Upload Data to Cloud",
+        "category": "CodePaw",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "codePaw.syncFromCloud",
+        "title": "Download Data from Cloud",
+        "category": "CodePaw",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "codePaw.syncStatus",
+        "title": "Sync Status",
+        "category": "CodePaw",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "codePaw.resetSync",
+        "title": "Reset Sync Configuration",
+        "category": "CodePaw",
+        "icon": "$(gear)"
       }
     ],
     "viewsContainers": {
@@ -117,6 +147,16 @@
           "command": "codePaw.checkAchievements",
           "when": "view == codePaw.petView",
           "group": "actions@2"
+        },
+        {
+          "command": "codePaw.syncStatus",
+          "when": "view == codePaw.petView",
+          "group": "sync@1"
+        },
+        {
+          "command": "codePaw.setupSync",
+          "when": "view == codePaw.petView",
+          "group": "sync@2"
         }
       ],
       "commandPalette": [
@@ -137,6 +177,21 @@
         },
         {
           "command": "codePaw.checkAchievements"
+        },
+        {
+          "command": "codePaw.setupSync"
+        },
+        {
+          "command": "codePaw.syncToCloud"
+        },
+        {
+          "command": "codePaw.syncFromCloud"
+        },
+        {
+          "command": "codePaw.syncStatus"
+        },
+        {
+          "command": "codePaw.resetSync"
         }
       ]
     },
@@ -162,6 +217,16 @@
           "type": "boolean",
           "default": true,
           "description": "Enable achievement and milestone notifications"
+        },
+        "codePaw.autoSync": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically sync data to cloud after significant progress"
+        },
+        "codePaw.syncOnStartup": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically check for cloud data on startup"
         }
       }
     }
