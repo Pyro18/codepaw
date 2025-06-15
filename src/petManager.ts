@@ -311,6 +311,7 @@ export class PetManager {
                     this.pet.stats.longestStreak,
                     this.pet.stats.currentStreak
                 );
+                this.addActivity('dailyBonus', 100);
 
                 if (this.pet.stats.currentStreak % 7 === 0) {
                     vscode.window.showInformationMessage(
