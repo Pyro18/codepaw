@@ -60,6 +60,7 @@ export class ActivityTracker {
                 const commitMessage = lastCommit.message || '';
 
                 let xp = 25;
+                xp += Math.floor(commitMessage.length / 5);
                 if (commitMessage.length > 50) xp += 10;
                 if (commitMessage.includes('fix') || commitMessage.includes('bug')) xp += 15;
                 if (commitMessage.includes('feat') || commitMessage.includes('feature')) xp += 20;
@@ -99,6 +100,11 @@ export class ActivityTracker {
                 let xp = 15;
                 if (lineCount > 100) xp += 5;
                 if (lineCount > 500) xp += 10;
+                if (lineCount > 1000) xp += 15;
+                if (lineCount > 2500) xp += 20;
+                if (lineCount > 5000) xp += 25;
+                if (lineCount > 10000) xp += 30;
+                xp += Math.floor(10 * Math.log(Math.max(1, lineCount / 100)));
                 
                 this.petManager.addActivity('save', xp, { 
                     language,
@@ -148,7 +154,7 @@ export class ActivityTracker {
                         }, 0);
                         
                         if (totalChanges > 0) {
-                            this.petManager.addActivity('typing', Math.min(totalChanges * 2, 15), {
+                            this.petManager.addActivity('typing', Math.min(totalChanges * 2, 15 + Math.floor(Math.log(Math.max(1, totalChanges)) ** 2)), {
                                 language: event.document.languageId,
                                 changes: totalChanges
                             });
@@ -222,7 +228,7 @@ export class ActivityTracker {
                 const sessionTime = Math.floor((now - this.sessionStartTime) / (1000 * 60));
 
                 if (sessionTime > 0 && sessionTime % 5 === 0) {
-                    this.petManager.addActivity('timeActive', 3, {
+                    this.petManager.addActivity('timeActive', Math.floor(3 + sessionTime / 15), {
                         sessionMinutes: sessionTime
                     });
                 }
